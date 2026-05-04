@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Axiom Research Bali</title>
+  <meta name="description" content="Research peptides in Bali, Indonesia. BPC-157, TB-500, Semaglutide and more. Lab-verified purity. Same-day delivery across Bali." />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 60px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      border: 2px solid #2a2a4a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 32px;
+      letter-spacing: -1px;
+      font-weight: 800;
+      color: #a78bfa;
+    }
+
+    .brand-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-tagline {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .trust-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(167, 139, 250, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 11px;
+      color: #a78bfa;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* Primary CTA buttons */
+    .primary-cta {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      margin-bottom: 10px;
+    }
+
+    .btn:hover { transform: translateY(-1px); opacity: 0.92; }
+    .btn:active { transform: translateY(0); }
+
+    .btn-icon {
+      font-size: 20px;
+      width: 28px;
+      text-align: center;
+    }
+
+    .btn-label { flex: 1; text-align: center; margin-right: 28px; }
+
+    .btn-arrow {
+      font-size: 16px;
+      opacity: 0.5;
+    }
+
+    .btn-shop {
+      background: linear-gradient(135deg, #7c3aed, #5b21b6);
+      color: #fff;
+    }
+
+    .btn-whatsapp {
+      background: #128c44;
+      color: #fff;
+    }
+
+    .btn-telegram {
+      background: #0088cc;
+      color: #fff;
+    }
+
+    /* Divider */
+    .divider {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0 14px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: #222;
+    }
+
+    .divider-label {
+      font-size: 11px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Product grid */
+    .product-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .product-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 14px 16px;
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #f0f0f0;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .product-btn:hover {
+      border-color: #444;
+      transform: translateY(-1px);
+    }
+
+    .product-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .product-desc {
+      font-size: 11px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .product-tag {
+      font-size: 10px;
+      color: #a78bfa;
+      background: rgba(167, 139, 250, 0.1);
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-top: 6px;
+    }
+
+    .full-catalog-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 13px;
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #aaa;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 8px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .full-catalog-btn:hover { border-color: #444; color: #fff; }
+
+    /* Trust section */
+    .trust-section {
+      width: 100%;
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .trust-icon { font-size: 16px; flex-shrink: 0; }
+
+    /* Content links */
+    .content-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .content-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #ccc;
+      font-size: 13px;
+      font-weight: 500;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .content-link:hover { border-color: #333; color: #fff; }
+
+    .content-link-icon { font-size: 18px; width: 24px; text-align: center; }
+
+    /* Social footer */
+    .social-footer {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .social-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #141414;
+      border: 1px solid #222;
+      text-decoration: none;
+      font-size: 18px;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .social-icon:hover { border-color: #555; transform: translateY(-2px); }
+
+    /* Disclaimer */
+    .disclaimer {
+      margin-top: 24px;
+      font-size: 10px;
+      color: #444;
+      text-align: center;
+      line-height: 1.6;
+      max-width: 380px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">AX</div>
+      <div class="brand-name">Axiom Research</div>
+      <div class="brand-tagline">Bali-based research compound sourcing</div>
+      <div class="trust-badge">
+        ✦ Lab-Verified Purity · Bali & Worldwide Shipping
+      </div>
+    </div>
+
+    <!-- Primary CTAs -->
+    <div class="primary-cta">
+      <a href="https://axiomresearchbali.com/shop" class="btn btn-shop">
+        <span class="btn-icon">🔬</span>
+        <span class="btn-label">Browse Research Catalog</span>
+        <span class="btn-arrow">›</span>
+      </a>
+      <a href="https://wa.me/YOURNUMBER?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20your%20research%20compounds" class="btn btn-whatsapp">
+        <span class="btn-icon">💬</span>
+        <span class="btn-label">Order via WhatsApp</span>
+        <span class="btn-arrow">›</span>
+      </a>
+      <a href="https://t.me/YOURCHANNEL" class="btn btn-telegram">
+        <span class="btn-icon">📡</span>
+        <span class="btn-label">Join Our Telegram</span>
+        <span class="btn-arrow">›</span>
+      </a>
+    </div>
+
+    <!-- Product quick links -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-label">Compounds</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="product-grid">
+      <a href="https://axiomresearchbali.com/product/bpc-157" class="product-btn">
+        <div class="product-name">BPC-157</div>
+        <div class="product-desc">Body protection compound</div>
+        <div class="product-tag">In Stock</div>
+      </a>
+      <a href="https://axiomresearchbali.com/product/tb-500" class="product-btn">
+        <div class="product-name">TB-500</div>
+        <div class="product-desc">Thymosin Beta-4</div>
+        <div class="product-tag">In Stock</div>
+      </a>
+      <a href="https://axiomresearchbali.com/product/semaglutide" class="product-btn">
+        <div class="product-name">Semaglutide</div>
+        <div class="product-desc">GLP-1 receptor agonist</div>
+        <div class="product-tag">In Stock</div>
+      </a>
+      <a href="https://axiomresearchbali.com/product/tirzepatide" class="product-btn">
+        <div class="product-name">Tirzepatide</div>
+        <div class="product-desc">GIP/GLP-1 dual agonist</div>
+        <div class="product-tag">In Stock</div>
+      </a>
+      <a href="https://axiomresearchbali.com/product/ghk-cu" class="product-btn">
+        <div class="product-name">GHK-Cu</div>
+        <div class="product-desc">Copper peptide complex</div>
+        <div class="product-tag">In Stock</div>
+      </a>
+      <a href="https://axiomresearchbali.com/product/nad-plus" class="product-btn">
+        <div class="product-name">NAD+</div>
+        <div class="product-desc">Nicotinamide adenine</div>
+        <div class="product-tag">In Stock</div>
+      </a>
+    </div>
+
+    <a href="https://axiomresearchbali.com/shop" class="full-catalog-btn">
+      View full catalog →
+    </a>
+
+    <!-- Trust indicators -->
+    <div class="trust-section">
+      <div class="trust-item">
+        <span class="trust-icon">📋</span>
+        Certificate of Analysis available for every batch
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon">🚀</span>
+        Same-day delivery across Bali · Worldwide shipping
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon">🔒</span>
+        Discreet packaging · Secure payment
+      </div>
+    </div>
+
+    <!-- Content links -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-label">Content</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="content-section">
+      <a href="https://axiomresearchbali.com/blog" class="content-link">
+        <span class="content-link-icon">📖</span>
+        Read our research guides & compound breakdowns
+      </a>
+      <a href="https://www.youtube.com/@AxiomResearch" class="content-link">
+        <span class="content-link-icon">▶️</span>
+        Watch research content on YouTube
+      </a>
+      <a href="mailto:info@axiomresearchbali.com" class="content-link">
+        <span class="content-link-icon">✉️</span>
+        Research enquiries & wholesale orders
+      </a>
+    </div>
+
+    <!-- Social icons -->
+    <div class="social-footer">
+      <a href="https://t.me/YOURCHANNEL" class="social-icon" title="Telegram">📡</a>
+      <a href="https://x.com/AxiomResearchBali" class="social-icon" title="X / Twitter">𝕏</a>
+      <a href="https://www.youtube.com/@AxiomResearch" class="social-icon" title="YouTube">▶</a>
+      <a href="https://wa.me/YOURNUMBER" class="social-icon" title="WhatsApp">💬</a>
+      <a href="mailto:info@axiomresearchbali.com" class="social-icon" title="Email">✉</a>
+    </div>
+
+    <!-- Legal disclaimer -->
+    <div class="disclaimer">
+      All products are sold strictly for in-vitro research purposes only.<br />
+      Not intended for human consumption. For use by qualified researchers.<br />
+      © 2026 Axiom Research · Bali, Indonesia
+    </div>
+
+  </div>
+</body>
+</html>

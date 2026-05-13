@@ -64,16 +64,31 @@ app.get('/api/export/backup', requireAuth, (req, res) => {
 // Database restore (admin only)
 const multer = require('multer');
 const fs = require('fs');
+const os = require('os');
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 app.post('/api/restore-db', requireAuth, upload.single('database'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  const dbPath = process.env.DB_PATH || path.join(__dirname, 'axiom-lab.db');
+  const tempPath = path.join(os.tmpdir(), `restore-${Date.now()}.db`);
   try {
-    db.close();
-    fs.writeFileSync(dbPath, req.file.buffer);
-    res.json({ message: 'Database restored. Server restarting in 2 seconds...' });
-    setTimeout(() => process.exit(1), 2000);
+    fs.writeFileSync(tempPath, req.file.buffer);
+    const tables = ['settings', 'activity_log', 'categories', 'products', 'suppliers',
+      'supplier_orders', 'supplier_order_items', 'customers', 'sales', 'sale_items', 'users'];
+    db.exec(`ATTACH DATABASE '${tempPath}' AS src`);
+    db.exec('PRAGMA foreign_keys = OFF');
+    const restore = db.transaction(() => {
+      for (const t of tables) {
+        db.exec(`DELETE FROM main.${t}`);
+        db.exec(`INSERT INTO main.${t} SELECT * FROM src.${t}`);
+      }
+    });
+    restore();
+    db.exec('PRAGMA foreign_keys = ON');
+    db.exec('DETACH DATABASE src');
+    try { fs.unlinkSync(tempPath); } catch {}
+    res.json({ message: 'ok' });
   } catch (err) {
+    try { db.exec('ROLLBACK'); db.exec('DETACH DATABASE src'); } catch {}
+    try { fs.unlinkSync(tempPath); } catch {}
     res.status(500).json({ error: 'Restore failed: ' + err.message });
   }
 });

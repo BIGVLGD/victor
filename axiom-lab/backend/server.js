@@ -80,35 +80,25 @@ const os = require('os');
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 app.post('/api/restore-db', requireAuth, upload.single('database'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  const tempPath = path.join(os.tmpdir(), `restore-${Date.now()}.db`);
-  let srcDb = null;
+  const dbPath = process.env.DB_PATH || path.join(__dirname, 'axiom-lab.db');
   try {
-    fs.writeFileSync(tempPath, req.file.buffer);
+    // Verify uploaded file is valid SQLite
     const Database = require('better-sqlite3');
-    srcDb = new Database(tempPath, { readonly: true });
-    const tables = ['settings', 'activity_log', 'categories', 'products', 'suppliers',
-      'supplier_orders', 'supplier_order_items', 'customers', 'sales', 'sale_items', 'users'];
-    db.pragma('foreign_keys = OFF');
-    const restore = db.transaction(() => {
-      for (const t of tables) {
-        db.prepare(`DELETE FROM ${t}`).run();
-        const rows = srcDb.prepare(`SELECT * FROM ${t}`).all();
-        if (rows.length > 0) {
-          const cols = Object.keys(rows[0]).join(', ');
-          const placeholders = Object.keys(rows[0]).map(() => '?').join(', ');
-          const insert = db.prepare(`INSERT INTO ${t} (${cols}) VALUES (${placeholders})`);
-          for (const row of rows) insert.run(Object.values(row));
-        }
-      }
-    });
-    restore();
-    db.pragma('foreign_keys = ON');
-    srcDb.close();
-    try { fs.unlinkSync(tempPath); } catch {}
-    res.json({ message: 'ok' });
+    const tempPath = path.join(os.tmpdir(), `verify-${Date.now()}.db`);
+    fs.writeFileSync(tempPath, req.file.buffer);
+    const check = new Database(tempPath, { readonly: true });
+    const salesCount = check.prepare('SELECT COUNT(*) as c FROM sales').get().c;
+    const usersCount = check.prepare('SELECT COUNT(*) as c FROM users').get().c;
+    check.close();
+    fs.unlinkSync(tempPath);
+
+    if (usersCount === 0) return res.status(400).json({ error: 'Invalid backup file' });
+
+    // Write directly to DB path and restart
+    fs.writeFileSync(dbPath, req.file.buffer);
+    res.json({ message: 'ok', salesInBackup: salesCount });
+    setTimeout(() => { try { db.close(); } catch {} process.exit(1); }, 800);
   } catch (err) {
-    if (srcDb) try { srcDb.close(); } catch {}
-    try { fs.unlinkSync(tempPath); } catch {}
     console.error('Restore error:', err);
     res.status(500).json({ error: err.message });
   }

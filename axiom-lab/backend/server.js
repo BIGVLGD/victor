@@ -21,6 +21,18 @@ app.use('/api/settings', require('./routes/settings'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
+// Debug endpoint - shows DB state
+app.get('/api/debug-db', (req, res) => {
+  const db = require('./db');
+  const dbPath = process.env.DB_PATH || path.join(__dirname, 'axiom-lab.db');
+  const sales = db.prepare('SELECT COUNT(*) as c FROM sales').get().c;
+  const customers = db.prepare('SELECT COUNT(*) as c FROM customers').get().c;
+  const users = db.prepare('SELECT COUNT(*) as c FROM users').get().c;
+  const fs = require('fs');
+  const size = fs.existsSync(dbPath) ? fs.statSync(dbPath).size : -1;
+  res.json({ dbPath, size, sales, customers, users, node: process.version });
+});
+
 // CSV export endpoints
 const db = require('./db');
 const { requireAuth } = require('./middleware/auth');

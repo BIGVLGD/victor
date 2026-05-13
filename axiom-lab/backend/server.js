@@ -61,6 +61,23 @@ app.get('/api/export/backup', requireAuth, (req, res) => {
   fs.createReadStream(dbPath).pipe(res);
 });
 
+// Database restore (admin only)
+const multer = require('multer');
+const fs = require('fs');
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
+app.post('/api/restore-db', requireAuth, upload.single('database'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  const dbPath = process.env.DB_PATH || path.join(__dirname, 'axiom-lab.db');
+  try {
+    db.close();
+    fs.writeFileSync(dbPath, req.file.buffer);
+    res.json({ message: 'Database restored. Server restarting in 2 seconds...' });
+    setTimeout(() => process.exit(1), 2000);
+  } catch (err) {
+    res.status(500).json({ error: 'Restore failed: ' + err.message });
+  }
+});
+
 // Serve frontend in production
 if (isProd) {
   const frontendDist = path.join(__dirname, '../frontend/dist');

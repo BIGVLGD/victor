@@ -5,7 +5,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
 import Modal from '../components/ui/Modal';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
-import { Save, Plus, Edit2, Trash2, Download, Clock } from 'lucide-react';
+import { Save, Plus, Edit2, Trash2, Download, Upload, Clock } from 'lucide-react';
 
 interface User { id: number; name: string; email: string; role: string; created_at: string; }
 interface LogEntry { id: number; user_name: string; action: string; entity_type: string; entity_id: string; details: string; created_at: string; }
@@ -85,6 +85,24 @@ export default function Settings() {
   };
 
   const set = (key: keyof SettingsType, val: string) => setSettings(s => ({ ...s, [key]: val }));
+
+  const restoreDB = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.name.endsWith('.db')) return toast('error', 'Please select a .db backup file');
+    if (!confirm('This will replace ALL current data with the backup. Are you sure?')) return;
+    const form = new FormData();
+    form.append('database', file);
+    const token = localStorage.getItem('axiom_token');
+    try {
+      const res = await fetch('/api/restore-db', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast('success', 'Restored! Page will reload in 5 seconds...');
+      setTimeout(() => window.location.reload(), 5000);
+    } catch (e: unknown) { toast('error', e instanceof Error ? e.message : 'Restore failed'); }
+    e.target.value = '';
+  };
 
   const ROLES = ['admin', 'partner', 'employee'];
 
@@ -169,6 +187,18 @@ export default function Settings() {
           ))}
         </div>
       </div>
+
+      {/* Restore */}
+      {isAdmin && (
+        <div className="card border-warning/20">
+          <h2 className="text-sm font-semibold text-warning mb-1">Restore Database from Backup</h2>
+          <p className="text-xs text-txt-muted mb-4">Upload a <strong>.db</strong> backup file to replace all current data. Use this to migrate your local data to the online version.</p>
+          <label className="btn-secondary flex items-center gap-2 w-fit cursor-pointer py-3 px-4">
+            <Upload size={14} /> Select Backup File (.db)
+            <input type="file" accept=".db" className="hidden" onChange={restoreDB} />
+          </label>
+        </div>
+      )}
 
       {/* Activity Log */}
       {isAdmin && (

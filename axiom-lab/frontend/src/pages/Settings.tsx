@@ -97,10 +97,14 @@ export default function Settings() {
     try {
       const res = await fetch('/api/restore-db', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok || data.error) throw new Error(data.error || 'Unknown error');
       toast('success', 'Database restored! Reloading...');
       setTimeout(() => window.location.reload(), 1500);
-    } catch (e: unknown) { toast('error', e instanceof Error ? e.message : 'Restore failed'); }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Restore failed';
+      toast('error', 'Restore failed: ' + msg);
+      alert('Restore error: ' + msg);
+    }
     e.target.value = '';
   };
 

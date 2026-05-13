@@ -69,27 +69,36 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100
 app.post('/api/restore-db', requireAuth, upload.single('database'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   const tempPath = path.join(os.tmpdir(), `restore-${Date.now()}.db`);
+  let srcDb = null;
   try {
     fs.writeFileSync(tempPath, req.file.buffer);
+    const Database = require('better-sqlite3');
+    srcDb = new Database(tempPath, { readonly: true });
     const tables = ['settings', 'activity_log', 'categories', 'products', 'suppliers',
       'supplier_orders', 'supplier_order_items', 'customers', 'sales', 'sale_items', 'users'];
-    db.exec(`ATTACH DATABASE '${tempPath}' AS src`);
-    db.exec('PRAGMA foreign_keys = OFF');
+    db.pragma('foreign_keys = OFF');
     const restore = db.transaction(() => {
       for (const t of tables) {
-        db.exec(`DELETE FROM main.${t}`);
-        db.exec(`INSERT INTO main.${t} SELECT * FROM src.${t}`);
+        db.prepare(`DELETE FROM ${t}`).run();
+        const rows = srcDb.prepare(`SELECT * FROM ${t}`).all();
+        if (rows.length > 0) {
+          const cols = Object.keys(rows[0]).join(', ');
+          const placeholders = Object.keys(rows[0]).map(() => '?').join(', ');
+          const insert = db.prepare(`INSERT INTO ${t} (${cols}) VALUES (${placeholders})`);
+          for (const row of rows) insert.run(Object.values(row));
+        }
       }
     });
     restore();
-    db.exec('PRAGMA foreign_keys = ON');
-    db.exec('DETACH DATABASE src');
+    db.pragma('foreign_keys = ON');
+    srcDb.close();
     try { fs.unlinkSync(tempPath); } catch {}
     res.json({ message: 'ok' });
   } catch (err) {
-    try { db.exec('ROLLBACK'); db.exec('DETACH DATABASE src'); } catch {}
+    if (srcDb) try { srcDb.close(); } catch {}
     try { fs.unlinkSync(tempPath); } catch {}
-    res.status(500).json({ error: 'Restore failed: ' + err.message });
+    console.error('Restore error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 

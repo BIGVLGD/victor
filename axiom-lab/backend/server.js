@@ -1,11 +1,13 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('./db'); // initialize DB
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const isProd = process.env.NODE_ENV === 'production';
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: isProd ? true : 'http://localhost:5173' }));
 app.use(express.json({ limit: '10mb' }));
 
 app.use('/api/auth', require('./routes/auth'));
@@ -52,15 +54,23 @@ app.get('/api/export/customers', requireAuth, (req, res) => {
 
 // SQLite backup download
 app.get('/api/export/backup', requireAuth, (req, res) => {
-  const path = require('path');
   const fs = require('fs');
-  const dbPath = path.join(__dirname, 'axiom-lab.db');
+  const dbPath = process.env.DB_PATH || path.join(__dirname, 'axiom-lab.db');
   res.setHeader('Content-Type', 'application/octet-stream');
   res.setHeader('Content-Disposition', `attachment; filename="axiom-lab-backup-${new Date().toISOString().split('T')[0]}.db"`);
   fs.createReadStream(dbPath).pipe(res);
 });
 
-app.listen(PORT, () => {
-  console.log(`\n🧪 Axiom Lab API running on http://localhost:${PORT}`);
-  console.log(`   Database: axiom-lab.db\n`);
+// Serve frontend in production
+if (isProd) {
+  const frontendDist = path.join(__dirname, '../frontend/dist');
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n🧪 Axiom Lab API running on port ${PORT}`);
+  console.log(`   Mode: ${isProd ? 'production' : 'development'}\n`);
 });

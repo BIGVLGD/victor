@@ -7,7 +7,9 @@
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
-    "setup": "npm run install:all && cd backend && node seed.js"
+    "setup": "npm run install:all && cd backend && node seed.js",
+    "build": "cd frontend && npm install && npm run build",
+    "start": "NODE_ENV=production node backend/server.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

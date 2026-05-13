@@ -1,6 +1,13 @@
 const db = require('./db');
 const bcrypt = require('bcryptjs');
 
+// Skip seeding if data already exists (important for production re-deploys)
+const existing = db.prepare('SELECT COUNT(*) as c FROM users').get();
+if (existing.c > 0) {
+  console.log('✓ Database already seeded, skipping.');
+  process.exit(0);
+}
+
 console.log('Seeding database...');
 
 // Clear existing data

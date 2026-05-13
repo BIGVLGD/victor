@@ -64,13 +64,19 @@ app.get('/api/export/customers', requireAuth, (req, res) => {
   res.send(csv);
 });
 
-// SQLite backup download
-app.get('/api/export/backup', requireAuth, (req, res) => {
-  const fs = require('fs');
-  const dbPath = process.env.DB_PATH || path.join(__dirname, 'axiom-lab.db');
-  res.setHeader('Content-Type', 'application/octet-stream');
-  res.setHeader('Content-Disposition', `attachment; filename="axiom-lab-backup-${new Date().toISOString().split('T')[0]}.db"`);
-  fs.createReadStream(dbPath).pipe(res);
+// SQLite backup download - proper backup including WAL data
+app.get('/api/export/backup', requireAuth, async (req, res) => {
+  const backupPath = path.join(os.tmpdir(), `axiom-backup-${Date.now()}.db`);
+  try {
+    await db.backup(backupPath);
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="axiom-lab-backup-${new Date().toISOString().split('T')[0]}.db"`);
+    const stream = fs.createReadStream(backupPath);
+    stream.pipe(res);
+    stream.on('end', () => { try { fs.unlinkSync(backupPath); } catch {} });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Database restore (admin only)

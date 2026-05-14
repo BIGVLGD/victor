@@ -11,6 +11,7 @@ interface SidebarProps {
 }
 
 const navItems = [
+  { to: '/todo', icon: CheckSquare, label: 'To-Do', badge: true },
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/finance', icon: DollarSign, label: 'Finance', financeOnly: true },
   { to: '/sales', icon: ShoppingCart, label: 'Sales' },
@@ -19,7 +20,6 @@ const navItems = [
   { to: '/orders', icon: Package, label: 'Supplier Orders' },
   { to: '/suppliers', icon: Truck, label: 'Suppliers' },
   { to: '/platforms', icon: Smartphone, label: 'Platforms' },
-  { to: '/todo', icon: CheckSquare, label: 'To-Do', badge: true },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 

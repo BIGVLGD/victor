@@ -162,6 +162,44 @@ db.exec(`
     line_total INTEGER NOT NULL DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS todos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT DEFAULT '',
+    category TEXT DEFAULT 'General',
+    priority INTEGER DEFAULT 2,
+    status TEXT DEFAULT 'open',
+    assigned_to TEXT DEFAULT '',
+    due_date TEXT DEFAULT '',
+    completed_at TEXT DEFAULT '',
+    created_by_id INTEGER,
+    created_by TEXT DEFAULT '',
+    notify INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS todo_comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    todo_id INTEGER REFERENCES todos(id) ON DELETE CASCADE,
+    user_id INTEGER,
+    user_name TEXT DEFAULT '',
+    body TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS todo_attachments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    todo_id INTEGER REFERENCES todos(id) ON DELETE CASCADE,
+    filename TEXT NOT NULL,
+    original_name TEXT NOT NULL,
+    size INTEGER DEFAULT 0,
+    mime_type TEXT DEFAULT '',
+    data BLOB,
+    created_by TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 module.exports = db;

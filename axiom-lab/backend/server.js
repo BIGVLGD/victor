@@ -18,6 +18,7 @@ app.use('/api/suppliers', require('./routes/suppliers'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/finance', require('./routes/finance'));
 app.use('/api/settings', require('./routes/settings'));
+app.use('/api/todos', require('./routes/todos'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 

@@ -1,7 +1,9 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, DollarSign, ShoppingCart, Users, FlaskConical, Package, Truck, Smartphone, Settings, ChevronLeft, ChevronRight, LogOut, TestTube } from 'lucide-react';
+import { LayoutDashboard, DollarSign, ShoppingCart, Users, FlaskConical, Package, Truck, Smartphone, Settings, ChevronLeft, ChevronRight, LogOut, TestTube, CheckSquare } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '../../lib/utils';
+import { useEffect, useState } from 'react';
+import { api } from '../../lib/api';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -17,12 +19,23 @@ const navItems = [
   { to: '/orders', icon: Package, label: 'Supplier Orders' },
   { to: '/suppliers', icon: Truck, label: 'Suppliers' },
   { to: '/platforms', icon: Smartphone, label: 'Platforms' },
+  { to: '/todo', icon: CheckSquare, label: 'To-Do', badge: true },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const [todoCount, setTodoCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCount = () => {
+      api.get<{ open: number }>('/todos/meta/counts').then(d => setTodoCount(d.open)).catch(() => {});
+    };
+    fetchCount();
+    const iv = setInterval(fetchCount, 30000);
+    return () => clearInterval(iv);
+  }, []);
 
   const isActive = (to: string) => {
     if (to === '/') return location.pathname === '/';
@@ -52,6 +65,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {navItems.map(item => {
           if (item.financeOnly && user?.role === 'employee') return null;
           const active = isActive(item.to);
+          const count = item.badge ? todoCount : 0;
           return (
             <NavLink
               key={item.to}
@@ -65,8 +79,24 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 collapsed && 'justify-center px-2'
               )}
             >
-              <item.icon size={17} className={cn('shrink-0', active ? 'text-cyan' : 'group-hover:text-txt-primary')} />
-              {!collapsed && <span className="truncate">{item.label}</span>}
+              <div className="relative shrink-0">
+                <item.icon size={17} className={cn(active ? 'text-cyan' : 'group-hover:text-txt-primary')} />
+                {count > 0 && collapsed && (
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-cyan rounded-full text-[8px] text-bg font-bold flex items-center justify-center">
+                    {count > 9 ? '9+' : count}
+                  </span>
+                )}
+              </div>
+              {!collapsed && (
+                <>
+                  <span className="truncate flex-1">{item.label}</span>
+                  {count > 0 && (
+                    <span className="bg-cyan/20 text-cyan text-[9px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
+                      {count}
+                    </span>
+                  )}
+                </>
+              )}
             </NavLink>
           );
         })}

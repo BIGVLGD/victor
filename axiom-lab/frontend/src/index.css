@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    background-color: #0a0a0a;
+    color: #ffffff;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #111111; }
+  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+}
+
+@layer components {
+  .card {
+    @apply bg-card border border-border rounded-xl p-4;
+  }
+  .btn-primary {
+    @apply bg-cyan text-bg font-semibold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all text-sm;
+  }
+  .btn-secondary {
+    @apply bg-transparent border border-border text-txt-primary font-medium px-4 py-2 rounded-lg hover:border-cyan hover:text-cyan transition-all text-sm;
+  }
+  .btn-danger {
+    @apply bg-danger text-white font-medium px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all text-sm;
+  }
+  .input {
+    @apply bg-[#0d0d0d] border border-border text-txt-primary rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:border-cyan transition-colors placeholder-txt-muted;
+  }
+  .label {
+    @apply text-txt-secondary text-xs font-medium uppercase tracking-wider mb-1 block;
+  }
+  .neon-text {
+    @apply text-cyan;
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+  }
+  .glow-card {
+    @apply card;
+    box-shadow: 0 0 0 1px #1a1a1a, 0 4px 24px rgba(0,0,0,0.4);
+    transition: box-shadow 0.2s;
+  }
+  .glow-card:hover {
+    box-shadow: 0 0 0 1px #00f5ff33, 0 4px 24px rgba(0, 245, 255, 0.1);
+  }
+  .table-row {
+    @apply border-b border-border hover:bg-white/[0.02] transition-colors;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+}

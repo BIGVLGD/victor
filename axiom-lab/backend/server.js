@@ -19,6 +19,7 @@ app.use('/api/orders', require('./routes/orders'));
 app.use('/api/finance', require('./routes/finance'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/todos', require('./routes/todos'));
+app.use('/api/expenses', require('./routes/expenses'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
@@ -53,6 +54,15 @@ app.get('/api/export/products', requireAuth, (req, res) => {
   const csv = header + rows.map(r => Object.values(r).join(',')).join('\n');
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', 'attachment; filename="axiom-products.csv"');
+  res.send(csv);
+});
+
+app.get('/api/export/expenses', requireAuth, (req, res) => {
+  const rows = db.prepare(`SELECT expense_ref, date, category, description, amount, amount_usd, payment_method, paid_by, status, notes FROM expenses ORDER BY date DESC`).all();
+  const header = 'Expense Ref,Date,Category,Description,Amount IDR,Amount USD,Payment Method,Paid By,Status,Notes\n';
+  const csv = header + rows.map(r => Object.values(r).map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="axiom-expenses.csv"');
   res.send(csv);
 });
 

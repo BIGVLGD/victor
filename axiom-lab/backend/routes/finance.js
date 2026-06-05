@@ -56,12 +56,16 @@ router.get('/summary', requireFinance, (req, res) => {
 
   const supplierSpend = db.prepare(`SELECT COALESCE(SUM(total_idr), 0) as total FROM supplier_orders`).get();
   const supplierSpendMonth = db.prepare(`SELECT COALESCE(SUM(total_idr), 0) as total FROM supplier_orders WHERE date >= ?`).get(monthStart);
+  const expAllTime = db.prepare(`SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE status = 'Paid'`).get();
+  const expThisMonth = db.prepare(`SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= ? AND status = 'Paid'`).get(monthStart);
+  const expTopCatMonth = db.prepare(`SELECT category, COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= ? AND status = 'Paid' GROUP BY category ORDER BY total DESC LIMIT 1`).get(monthStart);
 
   res.json({
-    allTime: { ...allTime, supplier_spend: supplierSpend.total },
-    thisMonth: { ...thisMonth, units_sold: unitsSold.units, supplier_spend: supplierSpendMonth.total },
+    allTime: { ...allTime, supplier_spend: supplierSpend.total, expense_total: expAllTime.total, net_profit: allTime.total_profit - expAllTime.total },
+    thisMonth: { ...thisMonth, units_sold: unitsSold.units, supplier_spend: supplierSpendMonth.total, expense_total: expThisMonth.total, net_profit: thisMonth.total_profit - expThisMonth.total },
     byPayment,
     byPaymentMonth,
+    expTopCatMonth: expTopCatMonth || null,
   });
 });
 
@@ -148,8 +152,11 @@ router.get('/dashboard', requireFinance, (req, res) => {
   `).get(monthStart);
 
   const supplierSpendMonth = db.prepare(`SELECT COALESCE(SUM(total_idr), 0) as total FROM supplier_orders WHERE date >= ?`).get(monthStart);
+  const expenseMonth = db.prepare(`SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= ? AND status = 'Paid'`).get(monthStart);
 
   const margin = kpis.revenue > 0 ? (kpis.profit / kpis.revenue) * 100 : 0;
+  const netProfit = kpis.profit - expenseMonth.total;
+  const netMargin = kpis.revenue > 0 ? (netProfit / kpis.revenue) * 100 : 0;
 
   res.json({
     kpis: {
@@ -157,6 +164,9 @@ router.get('/dashboard', requireFinance, (req, res) => {
       units_sold: unitsSold.units,
       margin: Math.round(margin * 100) / 100,
       supplier_spend: supplierSpendMonth.total,
+      expense_total: expenseMonth.total,
+      net_profit: netProfit,
+      net_margin: Math.round(netMargin * 100) / 100,
     },
     comparisons: {
       today: getStats(today, today),

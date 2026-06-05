@@ -13,6 +13,7 @@ import Suppliers from './pages/Suppliers';
 import Platforms from './pages/Platforms';
 import Settings from './pages/Settings';
 import TodoPage from './pages/Todo';
+import Expenses from './pages/Expenses';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -56,6 +57,7 @@ function AppRoutes() {
       <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
       <Route path="/todo" element={<RequireAuth><TodoPage /></RequireAuth>} />
       <Route path="/todo/:id" element={<RequireAuth><TodoPage /></RequireAuth>} />
+      <Route path="/expenses" element={<RequireAuth><RequireFinance><Expenses /></RequireFinance></RequireAuth>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

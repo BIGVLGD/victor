@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, DollarSign, ShoppingCart, Users, FlaskConical, Package, Truck, Smartphone, Settings, ChevronLeft, ChevronRight, LogOut, TestTube, CheckSquare } from 'lucide-react';
+import { LayoutDashboard, DollarSign, ShoppingCart, Users, FlaskConical, Package, Truck, Smartphone, Settings, ChevronLeft, ChevronRight, LogOut, TestTube, CheckSquare, Receipt } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '../../lib/utils';
 import { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ const navItems = [
   { to: '/todo', icon: CheckSquare, label: 'To-Do', badge: true },
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/finance', icon: DollarSign, label: 'Finance', financeOnly: true },
+  { to: '/expenses', icon: Receipt, label: 'Expenses', financeOnly: true },
   { to: '/sales', icon: ShoppingCart, label: 'Sales' },
   { to: '/customers', icon: Users, label: 'Customers' },
   { to: '/products', icon: FlaskConical, label: 'Products' },

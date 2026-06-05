@@ -200,6 +200,27 @@ db.exec(`
     created_by TEXT DEFAULT '',
     created_at TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS expenses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    expense_ref TEXT UNIQUE NOT NULL,
+    date TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'Other',
+    description TEXT DEFAULT '',
+    amount INTEGER NOT NULL DEFAULT 0,
+    amount_usd REAL DEFAULT 0,
+    payment_method TEXT DEFAULT 'Cash',
+    paid_by TEXT DEFAULT 'Victor',
+    status TEXT DEFAULT 'Paid',
+    notes TEXT DEFAULT '',
+    created_by_id INTEGER,
+    created_by TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+  );
 `);
+
+// Add shipping_fee_per_unit to products if not exists (schema migration)
+try { db.exec(`ALTER TABLE products ADD COLUMN shipping_fee_per_unit INTEGER NOT NULL DEFAULT 0`); } catch {}
 
 module.exports = db;

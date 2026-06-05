@@ -5,10 +5,11 @@ import KPICard from '../components/ui/KPICard';
 import { TrendingUp, DollarSign, Percent, Truck, Tag, ShoppingCart } from 'lucide-react';
 
 interface FinanceSummary {
-  allTime: { total_sales: number; total_revenue: number; total_cost: number; total_profit: number; total_delivery: number; total_discounts: number; avg_margin: number; supplier_spend: number };
-  thisMonth: { total_sales: number; total_revenue: number; total_cost: number; total_profit: number; total_delivery: number; total_discounts: number; avg_margin: number; units_sold: number; avg_order_value: number; avg_profit_per_sale: number; supplier_spend: number };
+  allTime: { total_sales: number; total_revenue: number; total_cost: number; total_profit: number; total_delivery: number; total_discounts: number; avg_margin: number; supplier_spend: number; expense_total: number; net_profit: number };
+  thisMonth: { total_sales: number; total_revenue: number; total_cost: number; total_profit: number; total_delivery: number; total_discounts: number; avg_margin: number; units_sold: number; avg_order_value: number; avg_profit_per_sale: number; supplier_spend: number; expense_total: number; net_profit: number };
   byPayment: { payment_method: string; count: number; revenue: number }[];
   byPaymentMonth: { payment_method: string; count: number; revenue: number }[];
+  expTopCatMonth: { category: string; total: number } | null;
 }
 
 export default function Finance() {
@@ -57,6 +58,51 @@ export default function Finance() {
           <KPICard label="Total Discounts" value={formatIDR(at?.total_discounts || 0)} icon={<Tag size={16} />} accent="warning" loading={loading} />
           <KPICard label="Delivery Collected" value={formatIDR(at?.total_delivery || 0)} icon={<Truck size={16} />} loading={loading} />
           <KPICard label="Supplier Spend" value={formatIDR(at?.supplier_spend || 0)} loading={loading} />
+        </div>
+      </div>
+
+      {/* P&L Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[
+          { title: `P&L — ${monthName}`, rev: m?.total_revenue || 0, cogs: m?.total_cost || 0, gross: m?.total_profit || 0, exp: m?.expense_total || 0, net: m?.net_profit || 0 },
+          { title: 'P&L — All Time', rev: at?.total_revenue || 0, cogs: at?.total_cost || 0, gross: at?.total_profit || 0, exp: at?.expense_total || 0, net: at?.net_profit || 0 },
+        ].map(({ title, rev, cogs, gross, exp, net }) => (
+          <div key={title} className="card">
+            <h2 className="text-sm font-semibold text-txt-primary mb-4">{title}</h2>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between items-center py-1.5 border-b border-border/50">
+                <span className="text-txt-secondary">Revenue</span>
+                <span className="text-cyan font-medium">{formatIDR(rev)}</span>
+              </div>
+              <div className="flex justify-between items-center py-1.5 border-b border-border/50">
+                <span className="text-txt-muted pl-3">− Cost of Goods Sold</span>
+                <span className="text-warning">{formatIDR(cogs)}</span>
+              </div>
+              <div className="flex justify-between items-center py-1.5 border-b border-border bg-success/5 px-2 rounded">
+                <span className="text-txt-primary font-semibold">= Gross Profit</span>
+                <span className="text-success font-bold">{formatIDR(gross)}</span>
+              </div>
+              <div className="flex justify-between items-center py-1.5 border-b border-border/50">
+                <span className="text-txt-muted pl-3">− Business Expenses</span>
+                <span className="text-danger">{formatIDR(exp)}</span>
+              </div>
+              <div className="flex justify-between items-center py-1.5 bg-success/5 px-2 rounded">
+                <span className="text-txt-primary font-semibold">= Net Profit</span>
+                <span className={`font-bold ${net >= 0 ? 'text-success' : 'text-danger'}`}>{formatIDR(net)}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Expenses summary */}
+      <div>
+        <h2 className="text-xs font-medium text-txt-muted uppercase tracking-wider mb-3">Business Expenses</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <KPICard label={`Expenses — ${monthName}`} value={formatIDR(m?.expense_total || 0)} accent="warning" loading={loading} />
+          <KPICard label="Expenses — All Time" value={formatIDR(at?.expense_total || 0)} accent="warning" loading={loading} />
+          <KPICard label={`Net Profit — ${monthName}`} value={formatIDR(m?.net_profit || 0)} accent="success" loading={loading} />
+          <KPICard label="Net Profit — All Time" value={formatIDR(at?.net_profit || 0)} accent="success" loading={loading} />
         </div>
       </div>
 

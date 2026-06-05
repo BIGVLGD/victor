@@ -123,6 +123,8 @@ export default function Products() {
 
   const f = editing;
   const margin = f && f.sell_price && f.cost_price ? ((f.sell_price - f.cost_price) / f.sell_price * 100).toFixed(1) : '0.0';
+  const landedCost = (f?.cost_price || 0) + (f?.shipping_fee_per_unit || 0);
+  const realMargin = f?.sell_price ? (((f.sell_price - landedCost) / f.sell_price) * 100).toFixed(1) : '0.0';
 
   return (
     <div className="space-y-6">
@@ -201,6 +203,12 @@ export default function Products() {
             <div><label className="label">Cost Price (IDR)</label><input type="number" className="input" value={f.cost_price || ''} onChange={e => setEditing(p => ({ ...p!, cost_price: Number(e.target.value) }))} /></div>
             <div className="col-span-2 p-2 bg-bg rounded-lg border border-border text-xs text-txt-secondary">
               Margin: <span className="text-success font-bold">{margin}%</span> · Profit per unit: <span className="text-cyan">{formatIDR((f.sell_price || 0) - (f.cost_price || 0))}</span>
+            </div>
+            <div><label className="label">Shipping Fee / Unit (IDR)</label><input type="number" className="input" placeholder="0" value={f.shipping_fee_per_unit || ''} onChange={e => setEditing(p => ({ ...p!, shipping_fee_per_unit: Number(e.target.value) }))} /></div>
+            <div className="p-2 bg-bg rounded-lg border border-border/50 text-xs text-txt-secondary self-end mb-0.5">
+              <span className="text-txt-muted">Landed cost: </span><span className="text-warning font-medium">{formatIDR(landedCost)}</span>
+              <span className="text-txt-muted ml-3">Real margin: </span><span className="text-success font-medium">{realMargin}%</span>
+              <p className="text-[10px] text-txt-muted mt-0.5">Reference only — does not affect profit calculations</p>
             </div>
             <div><label className="label">Current Stock</label><input type="number" className="input" value={f.stock || ''} onChange={e => setEditing(p => ({ ...p!, stock: Number(e.target.value) }))} /></div>
             <div><label className="label">Low Stock Threshold</label><input type="number" className="input" value={f.threshold || ''} onChange={e => setEditing(p => ({ ...p!, threshold: Number(e.target.value) }))} /></div>

@@ -19,6 +19,9 @@ interface DashboardData {
     avg_profit: number;
     margin: number;
     supplier_spend: number;
+    expense_total: number;
+    net_profit: number;
+    net_margin: number;
   };
   comparisons: Record<string, { revenue: number; profit: number; sales: number }>;
   dailyData: { date: string; revenue: number; profit: number; sales: number }[];
@@ -84,13 +87,15 @@ export default function Dashboard() {
       {isFinance ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <KPICard label="Revenue This Month" value={formatIDR(kpis?.revenue || 0)} icon={<TrendingUp size={16} />} accent="cyan" loading={loading} />
-          <KPICard label="Profit This Month" value={formatIDR(kpis?.profit || 0)} icon={<DollarSign size={16} />} accent="success" loading={loading} />
-          <KPICard label="Profit Margin" value={formatPercent(kpis?.margin || 0)} icon={<BarChart2 size={16} />} accent="purple" loading={loading} />
+          <KPICard label="Gross Profit This Month" value={formatIDR(kpis?.profit || 0)} icon={<DollarSign size={16} />} accent="success" loading={loading} />
+          <KPICard label="Gross Margin" value={formatPercent(kpis?.margin || 0)} icon={<BarChart2 size={16} />} accent="purple" loading={loading} />
           <KPICard label="Sales This Month" value={String(kpis?.sales_count || 0)} icon={<ShoppingCart size={16} />} accent="cyan" loading={loading} />
           <KPICard label="Units Sold" value={String(kpis?.units_sold || 0)} icon={<Package size={16} />} loading={loading} />
           <KPICard label="Avg Order Value" value={formatIDR(kpis?.avg_order || 0)} loading={loading} />
-          <KPICard label="Avg Profit / Sale" value={formatIDR(kpis?.avg_profit || 0)} loading={loading} />
-          <KPICard label="Supplier Spend" value={formatIDR(kpis?.supplier_spend || 0)} icon={<Activity size={16} />} accent="warning" loading={loading} />
+          <KPICard label="Business Expenses" value={formatIDR(kpis?.expense_total || 0)} icon={<Activity size={16} />} accent="warning" loading={loading} />
+          <KPICard label="Supplier Spend" value={formatIDR(kpis?.supplier_spend || 0)} loading={loading} />
+          <KPICard label="Net Profit This Month" value={formatIDR(kpis?.net_profit || 0)} icon={<DollarSign size={16} />} accent="success" loading={loading} />
+          <KPICard label="Net Profit Margin" value={formatPercent(kpis?.net_margin || 0)} icon={<BarChart2 size={16} />} accent="purple" loading={loading} />
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">

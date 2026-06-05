@@ -29,6 +29,7 @@ export interface Product {
   units_sold: number;
   revenue_total: number;
   profit_total: number;
+  shipping_fee_per_unit: number;
   created_at: string;
   updated_at: string;
 }
@@ -144,6 +145,23 @@ export interface Settings {
   telegram_members: string;
   gmaps_rating: string;
   gmaps_reviews: string;
+}
+
+export interface Expense {
+  id: number;
+  expense_ref: string;
+  date: string;
+  category: string;
+  description: string;
+  amount: number;
+  amount_usd: number;
+  payment_method: string;
+  paid_by: string;
+  status: string;
+  notes: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Toast {

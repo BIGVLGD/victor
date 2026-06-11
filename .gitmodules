@@ -1,3 +1,6 @@
 [submodule "ruflo"]
 	path = ruflo
 	url = https://github.com/ruvnet/ruflo
+[submodule "whatsapp-agentkit"]
+	path = whatsapp-agentkit
+	url = https://github.com/Hainrixz/whatsapp-agentkit.git
